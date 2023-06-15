@@ -44,7 +44,30 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 
+db.User = require("./user")(sequelize, Sequelize);
+db.Token = require("./token")(sequelize, Sequelize);
+db.Post = require("./post")(sequelize, Sequelize);
+db.Like = require("./like")(sequelize, Sequelize);
+db.Comment = require("./comment")(sequelize, Sequelize);
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.Like.belongsTo(db.User, {
+  foreignKey: "user_id",
+  targetKey: "id",
+});
+db.Like.belongsTo(db.Post, {
+  foreignKey: "post_id",
+  targetKey: "id",
+});
+db.Comment.belongsTo(db.User, {
+  foreignKey: "user_id",
+  targetKey: "id",
+});
+db.Comment.belongsTo(db.Post, {
+  foreignKey: "post_id",
+  targetKey: "id",
+});
+db.Post.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
 
 module.exports = db;
