@@ -12,8 +12,9 @@ import {
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import images from "../assets/images.png";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../api/api";
+import { useSelector } from "react-redux";
 export default function LoginBox() {
   const toast = useToast();
   const nav = useNavigate();
@@ -22,6 +23,12 @@ export default function LoginBox() {
     emna: "",
     password: "",
   });
+  const userSelector = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (userSelector.id) {
+      nav("/");
+    }
+  }, [userSelector]);
   async function onSubmit() {
     try {
       setIsLoading(true);
