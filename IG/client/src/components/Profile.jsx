@@ -19,19 +19,58 @@ import {
   ModalOverlay,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { BsGearWide, BsPersonAdd } from "react-icons/bs";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { LuMailWarning } from "react-icons/lu";
 import PostS from "../components/contentS";
 import NavBar from "./NavBar";
 import TopBar from "./TopBar";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { api } from "../api/api";
 
 export default function ProfilePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
   const nav = useNavigate();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [verif, setVerif] = useState(true);
+  const handleClick = async () => {
+    try {
+      setIsLoading(true);
+      await api
+        .get("/user/verify", {
+          params: {
+            email: userSelector.email,
+          },
+        })
+        .then((res) => {
+          toast({
+            position: "top",
+            colorScheme: "cyan",
+            title: "Reset Password",
+            description: res.data.message,
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+          setIsLoading(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (userSelector?.id) {
+      console.log(userSelector);
+      if (!userSelector.verify) setVerif(false);
+    }
+  }, [userSelector]);
   return (
     <>
       <Container maxW={"400px"} height={"100vh"}>
@@ -78,9 +117,22 @@ export default function ProfilePage() {
                   </Menu>
                 </Flex>
               </Flex>
-              <Button onClick={onOpen} h={"32px"}>
-                Edit profile
-              </Button>
+              {verif ? (
+                <Button onClick={onOpen} h={"32px"}>
+                  Edit profile
+                </Button>
+              ) : (
+                <Button
+                  isLoading={isLoading}
+                  color={"orange"}
+                  onClick={handleClick}
+                  cursor={"pointer"}
+                >
+                  <Icon as={LuMailWarning} h={"48px"} fontSize={"20px"} />
+                  <Box>Click & Verify!!!</Box>
+                </Button>
+              )}
+
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay>
                   <ModalContent>
@@ -115,6 +167,7 @@ export default function ProfilePage() {
           <Center width={"100%"} padding={"0 16px 16px 16px"}>
             <Flex flexDir={"column"} width={"100%"}>
               <Text fontWeight={"bold"}>{userSelector.fullname}</Text>
+              <Text fontWeight={"bold"}>{userSelector.email}</Text>
               <Text>{userSelector.bio}</Text>
             </Flex>
           </Center>

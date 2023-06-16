@@ -335,7 +335,7 @@ const userController = {
         {
           where: {
             token,
-            status: "VERIFY",
+            status: "VERIFY ",
           },
         }
       );
