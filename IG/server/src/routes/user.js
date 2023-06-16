@@ -14,7 +14,11 @@ router.get("/verify", userController.reqVerify); // verify request
 router.patch("/token/verify", userController.getByToken, userController.verify); //verify from email
 
 // edit profile
-router.patch("/:id", userController.editUser);
+router.patch(
+  "/:id",
+  fileUploader({ destinationFolder: "avatar" }).single("avatar"),
+  userController.editUser
+);
 
 // reset password request
 router.get("/forgetPass", userController.forgetPass);
@@ -25,10 +29,10 @@ router.patch(
 ); // reset password
 
 // avatar upload
-router.post(
-  "/image/v1/:id",
-  fileUploader({ destinationFolder: "Avatar" }).single("Avatar"),
-  userController.uploadAvatar
-);
+// router.post(
+//   "/image/v1/:id",
+//   fileUploader({ destinationFolder: "avatar" }).single("avatar"),
+//   userController.uploadAvatar
+// );
 
 module.exports = router;

@@ -31,7 +31,7 @@ import { LuMailWarning } from "react-icons/lu";
 import PostS from "../components/contentS";
 import NavBar from "./NavBar";
 import TopBar from "./TopBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api/api";
 
@@ -46,6 +46,7 @@ export default function ProfilePage() {
   const inputFileRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imgUrl, setImgUrl] = useState();
+  const dispatch = useDispatch();
 
   function inputHandler(event) {
     try {
@@ -100,6 +101,22 @@ export default function ProfilePage() {
       if (!userSelector.verify) setVerif(false);
     }
   }, [userSelector]);
+
+  async function onSubmit() {
+    const formData = new FormData();
+    formData.append("avatar", selectedFile);
+
+    await api
+      .patch("/user/" + userSelector.id, { ...formData, ...profile })
+      .then((res) => {
+        console.log(res.data);
+        dispatch({
+          type: "login",
+          payload: res.data,
+        });
+        onClose();
+      });
+  }
   return (
     <>
       <Container maxW={"400px"} height={"100vh"}>
@@ -286,6 +303,9 @@ export default function ProfilePage() {
                       <Button
                         // variant="ghost"
                         colorScheme="blue"
+                        onClick={() => {
+                          onSubmit();
+                        }}
                       >
                         Submit
                       </Button>

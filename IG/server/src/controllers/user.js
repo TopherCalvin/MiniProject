@@ -96,28 +96,36 @@ const userController = {
   editUser: async (req, res) => {
     try {
       const { fullname, username, bio } = req.body;
-      const { id } = req.params;
-      // const upClause = {};
-      // if (fullname) {
-      //   upClause.fullname = fullname;
-      // }
-      // if (username) {
-      //   upClause.username = username;
-      // }
-      // if (email) {
-      //   upClause.email = email;
-      // }
-      // if (bio) {
-      //   upClause.bio = bio;
-      // }
-      // if (!Object.keys(upClause).length) {
-      //   res.status(400).send({ message: "No fields to update" });
-      // }
-      // await db.User.update(upClause, {
-      //   where: {
-      //     id: req.params.id,
-      //   },
-      // });
+      const { filename } = req.file;
+      const upClause = {};
+      if (fullname) {
+        upClause.fullname = fullname;
+      }
+      if (username) {
+        upClause.username = username;
+      }
+      if (bio) {
+        upClause.bio = bio;
+      }
+      if (filename) {
+        upClause.avatar_url = url_image + filename;
+      }
+      if (!Object.keys(upClause).length) {
+        res.send({ message: "No fields to update" });
+      }
+      await db.User.update(upClause, {
+        where: {
+          id: req.params.id,
+        },
+      });
+      await db.User.findOne({
+        where: {
+          id: req.params.id,
+        },
+      }).then((result) => {
+        delete result.dataValues.password;
+        res.send(result);
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).send({
@@ -357,26 +365,22 @@ const userController = {
   uploadAvatar: async (req, res) => {
     try {
       const { filename } = req.file;
-      await db.User.update(
-        {
-          avatar_url: url_image + filename,
-        },
-        {
-          where: {
-            id: req.params.id,
+      if (filename) {
+        await db.User.update(
+          {
+            avatar_url: url_image + filename,
           },
-        }
-      );
-
-      await db.User.findOne({
-        where: {
-          id: req.params.id,
-        },
-      }).then((result) => res.send(result));
+          {
+            where: {
+              id: req.params.id,
+            },
+          }
+        );
+      }
     } catch (error) {
-      console.log(err);
+      console.log(error);
       return res.status(500).send({
-        message: err.message,
+        message: error.message,
       });
     }
   },

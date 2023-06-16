@@ -8,7 +8,7 @@ const fileUploader = ({
 }) => {
   const storageConfig = multer.diskStorage({
     destination: (req, file, cb) => {
-      console.log("sadsadada");
+      console.log(file);
       cb(null, `${__dirname}/../public/${destinationFolder}`);
     },
 
