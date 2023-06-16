@@ -20,8 +20,11 @@ import {
   Text,
   useDisclosure,
   useToast,
+  Input,
+  Image,
 } from "@chakra-ui/react";
 import { BsGearWide, BsPersonAdd } from "react-icons/bs";
+import { HiOutlineUpload } from "react-icons/hi";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { LuMailWarning } from "react-icons/lu";
@@ -29,16 +32,42 @@ import PostS from "../components/contentS";
 import NavBar from "./NavBar";
 import TopBar from "./TopBar";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api/api";
 
 export default function ProfilePage() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
-  const nav = useNavigate();
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const [verif, setVerif] = useState(true);
+  const [profile, setProfile] = useState();
+  const nav = useNavigate();
+  const toast = useToast();
+  const inputFileRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imgUrl, setImgUrl] = useState();
+
+  function inputHandler(event) {
+    try {
+      const { value, id } = event.target;
+      const tempObj = {};
+      tempObj[id] = value;
+      setProfile({ ...profile, ...tempObj });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async function handleFile(event) {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImgUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
   const handleClick = async () => {
     try {
       setIsLoading(true);
@@ -140,11 +169,113 @@ export default function ProfilePage() {
                     <ModalCloseButton />
 
                     <ModalBody>
-                      <Flex flexDir={"column"}>
-                        <Box>Full Name</Box>
-                        <Box>Bio</Box>
-                        <Box>username must uniq</Box>
-                        <Box>profile picture</Box>
+                      <Flex flexDir={"column"} alignItems={"center"}>
+                        <Input
+                          h={"38px"}
+                          w={"90%"}
+                          placeholder="fullname"
+                          focusBorderColor="none"
+                          color={"silver"}
+                          border={"1px solid #80a9bb"}
+                          id="fullname"
+                          defaultValue={userSelector.fullname}
+                          onChange={inputHandler}
+                        ></Input>
+                        <Input
+                          h={"38px"}
+                          w={"90%"}
+                          placeholder="bio"
+                          focusBorderColor="none"
+                          color={"silver"}
+                          border={"1px solid #80a9bb"}
+                          id="bio"
+                          defaultValue={userSelector.bio}
+                          onChange={inputHandler}
+                        ></Input>
+                        <Input
+                          h={"38px"}
+                          w={"90%"}
+                          placeholder="username"
+                          focusBorderColor="none"
+                          color={"silver"}
+                          border={"1px solid #80a9bb"}
+                          id="username"
+                          defaultValue={userSelector.username}
+                          onChange={inputHandler}
+                        ></Input>
+
+                        <Input
+                          accept="image/png, image/jpeg"
+                          onChange={(e) => {
+                            handleFile(e);
+                            // inputHandler(e);
+                          }}
+                          ref={inputFileRef}
+                          type="file"
+                          display={"none"}
+                          id="filename"
+                        ></Input>
+                        {!selectedFile ? (
+                          <Box
+                            display={"flex"}
+                            flexDir={"column"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            padding={"16px"}
+                            gap={"16px"}
+                            w={"140px"}
+                            h={"160px"}
+                            border={"1px dashed silver"}
+                            borderRadius={"8px"}
+                            flex={"none"}
+                            flexGrow={"0"}
+                            textAlign={"center"}
+                            fontFamily={"roboto"}
+                            fontStyle={"normal"}
+                            fontWeight={"400"}
+                            fontSize={"12px"}
+                            lineHeight={"14px"}
+                            color={"#353535"}
+                          >
+                            <Icon as={HiOutlineUpload} w={"16px"} h={"16px"} />
+                            <Text as={"span"}>
+                              Drag and Drop File or{" "}
+                              <Text
+                                as={"span"}
+                                onClick={() => inputFileRef.current.click()}
+                                cursor={"pointer"}
+                                color={"silver"}
+                                textDecor={"underline"}
+                              >
+                                Browse
+                              </Text>
+                            </Text>
+                          </Box>
+                        ) : (
+                          <Image
+                            onClick={() => setSelectedFile(0)}
+                            display={"flex"}
+                            flexDir={"column"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            padding={"16px"}
+                            gap={"16px"}
+                            w={"140px"}
+                            h={"160px"}
+                            border={"1px dashed rgba(53, 53, 53, 0.3);"}
+                            borderRadius={"8px"}
+                            flex={"none"}
+                            flexGrow={"0"}
+                            textAlign={"center"}
+                            fontFamily={"roboto"}
+                            fontStyle={"normal"}
+                            fontWeight={"400"}
+                            fontSize={"12px"}
+                            lineHeight={"14px"}
+                            color={"#353535"}
+                            src={imgUrl}
+                          ></Image>
+                        )}
                       </Flex>
                     </ModalBody>
 

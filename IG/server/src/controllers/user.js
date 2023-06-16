@@ -95,28 +95,29 @@ const userController = {
   },
   editUser: async (req, res) => {
     try {
-      const { fullname, username, email, bio } = req.body;
-      const upClause = {};
-      if (fullname) {
-        upClause.fullname = fullname;
-      }
-      if (username) {
-        upClause.username = username;
-      }
-      if (email) {
-        upClause.email = email;
-      }
-      if (bio) {
-        upClause.bio = bio;
-      }
-      if (!Object.keys(upClause).length) {
-        res.status(400).send({ message: "No fields to update" });
-      }
-      await db.User.update(upClause, {
-        where: {
-          id: req.params.id,
-        },
-      });
+      const { fullname, username, bio } = req.body;
+      const { id } = req.params;
+      // const upClause = {};
+      // if (fullname) {
+      //   upClause.fullname = fullname;
+      // }
+      // if (username) {
+      //   upClause.username = username;
+      // }
+      // if (email) {
+      //   upClause.email = email;
+      // }
+      // if (bio) {
+      //   upClause.bio = bio;
+      // }
+      // if (!Object.keys(upClause).length) {
+      //   res.status(400).send({ message: "No fields to update" });
+      // }
+      // await db.User.update(upClause, {
+      //   where: {
+      //     id: req.params.id,
+      //   },
+      // });
     } catch (err) {
       console.log(err);
       return res.status(500).send({
