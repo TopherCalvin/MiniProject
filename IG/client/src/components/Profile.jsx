@@ -136,7 +136,7 @@ export default function ProfilePage() {
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay>
                   <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalHeader>Edit Profile</ModalHeader>
                     <ModalCloseButton />
 
                     <ModalBody>
@@ -156,7 +156,7 @@ export default function ProfilePage() {
                         // variant="ghost"
                         colorScheme="blue"
                       >
-                        Secondary Action
+                        Submit
                       </Button>
                     </ModalFooter>
                   </ModalContent>
