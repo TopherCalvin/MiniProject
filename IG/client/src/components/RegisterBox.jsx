@@ -10,6 +10,7 @@ import {
   Icon,
   InputRightElement,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import { api } from "../api/api";
 import images from "../assets/images.png";
@@ -18,9 +19,10 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 export default function RegisterBox() {
-  const nav = useNavigate();
   const toast = useToast();
+  const nav = useNavigate();
   const [seePassword, setSeePassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   YupPassword(Yup);
   const formik = useFormik({
     initialValues: {
@@ -49,8 +51,14 @@ export default function RegisterBox() {
     }),
     onSubmit: async () => {
       try {
+        setIsLoading(true);
         const regist = await api.post("/user", formik.values);
         if (regist.data.message == "your register was successful") {
+          await api.get("/user/verify", {
+            params: {
+              email: formik.values.email,
+            },
+          });
           toast({
             position: "top",
             colorScheme: "cyan",
@@ -60,6 +68,7 @@ export default function RegisterBox() {
             duration: 3000,
             isClosable: true,
           });
+          setIsLoading(false);
           nav("/login");
         } else {
           toast({
@@ -71,6 +80,7 @@ export default function RegisterBox() {
             duration: 3000,
             isClosable: true,
           });
+          setIsLoading(false);
         }
       } catch (err) {
         console.log(err);
@@ -200,7 +210,7 @@ export default function RegisterBox() {
           </Box>
         </InputGroup>
       </Box>
-      <Flex
+      <Button
         h={"32px"}
         w={"90%"}
         justifyContent={"center"}
@@ -209,10 +219,13 @@ export default function RegisterBox() {
         color={"white"}
         alignItems={"center"}
         cursor={"pointer"}
+        isLoading={isLoading}
+        loadingText="Submitting"
         onClick={formik.handleSubmit}
       >
         Sign up
-      </Flex>
+      </Button>
+      *when signing up verification will be sent to email
       <Flex
         h={"32px"}
         w={"90%"}
