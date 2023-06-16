@@ -1,21 +1,16 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const bcrypt = require("bcrypt");
-const { nanoid } = require("nanoid");
 const moment = require("moment");
-const mailer = require("../lib/mailer");
-const sharp = require("sharp");
-const private_key = process.env.private_key;
-const url = process.env.url;
-const url_image = process.env.URL_IMAGE;
+const url_postIMG = process.env.URL_POSTIMG;
 
 const postController = {
   insertPost: async (req, res) => {
     try {
-      const { image, caption, user_id } = req.body;
+      const { caption, user_id } = req.body;
+      const { filename } = req.file;
 
       await db.Post.create({
-        image,
+        image: url_postIMG + filename,
         caption,
         user_id,
       }).then(() => {

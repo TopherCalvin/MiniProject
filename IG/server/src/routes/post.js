@@ -4,7 +4,11 @@ const router = express.Router();
 const postController = require("../controllers").postController;
 
 //post
-router.post("/", postController.insertPost);
+router.post(
+  "/",
+  fileUploader({ destinationFolder: "post" }).single("post"),
+  postController.insertPost
+);
 router.get("/getAll", postController.getPost);
 router.get("/:id", postController.getPost1);
 router.patch("/:id", postController.editPost);

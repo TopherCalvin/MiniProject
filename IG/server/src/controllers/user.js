@@ -4,28 +4,39 @@ const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
 const moment = require("moment");
 const mailer = require("../lib/mailer");
-const sharp = require("sharp");
-const private_key = process.env.private_key;
-const url = process.env.url;
+const url_pass = process.env.url_pass;
+const url_verif = process.env.url_verif;
+
 const url_image = process.env.URL_IMAGE;
 
 const userController = {
   insertUser: async (req, res) => {
     try {
       const { fullname, username, email, password } = req.body;
+      const checker1 = await db.User.findOne({ where: { email } });
+      const checker2 = await db.User.findOne({ where: { username } });
+      if (!checker1?.dataValues?.id && !checker2?.dataValues?.id) {
+        const hashPassword = await bcrypt.hash(password, 10);
 
-      const hashPassword = await bcrypt.hash(password, 10);
-
-      await db.User.create({
-        fullname,
-        username,
-        email,
-        password: hashPassword,
-      }).then(() => {
-        res.send({
-          message: "your register was successful",
+        await db.User.create({
+          fullname,
+          username,
+          email,
+          password: hashPassword,
+        }).then(() => {
+          res.send({
+            message: "your register was successful",
+          });
         });
-      });
+      } else if (checker1?.dataValues?.id) {
+        res.send({
+          message: `user with email ${email} already exist`,
+        });
+      } else if (checker2?.dataValues?.id) {
+        res.send({
+          message: `user with username ${username} already exist`,
+        });
+      }
     } catch (err) {
       console.log(err);
       return res.status(500).send({
@@ -40,7 +51,7 @@ const userController = {
         where: {
           [Op.or]: [
             {
-              name: emna,
+              username: emna,
             },
             {
               email: emna,
@@ -191,7 +202,7 @@ const userController = {
         await mailer({
           subject: "Reset Password",
           to: user.dataValues.email, //email untuk forget password
-          text: url + generateToken,
+          text: url_pass + generateToken,
         });
 
         return res.send({
@@ -279,7 +290,7 @@ const userController = {
         await mailer({
           subject: "Verify Account",
           to: user.dataValues.email, //email untuk verify
-          text: url + generateToken,
+          text: url_verif + generateToken,
         });
 
         return res.send({

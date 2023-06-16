@@ -2,7 +2,10 @@ module.exports = (sequelize, Sequelize) => {
   const Like = sequelize.define(
     "Likes",
     {
-      liked: Sequelize.BOOLEAN,
+      liked: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+      },
       user_id: {
         type: Sequelize.INTEGER,
         primaryKey: true,

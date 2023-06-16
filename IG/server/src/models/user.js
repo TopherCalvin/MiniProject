@@ -10,7 +10,7 @@ module.exports = (sequelize, Sequelize) => {
       avatar_url: Sequelize.STRING,
       verify: {
         type: Sequelize.BOOLEAN,
-        defaultValues: false,
+        defaultValue: false,
       },
     },
     {
