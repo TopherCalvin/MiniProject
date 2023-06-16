@@ -140,6 +140,9 @@ const userController = {
                 [Op.lte]: moment().add(1, "d").format(),
               },
             },
+            {
+              valid: true,
+            },
           ],
         },
       });
@@ -309,7 +312,8 @@ const userController = {
   },
   verify: async (req, res) => {
     try {
-      const { token } = req.query;
+      let token = req.headers.authorization;
+      token = token.split(" ")[1];
       const { id } = req.user;
       await db.User.update(
         {

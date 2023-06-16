@@ -7,6 +7,7 @@ import {
   InputRightElement,
   Icon,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import images from "../assets/images.png";
@@ -16,12 +17,14 @@ import { api } from "../api/api";
 export default function LoginBox() {
   const toast = useToast();
   const nav = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [account, setAccount] = useState({
     emna: "",
     password: "",
   });
   async function onSubmit() {
     try {
+      setIsLoading(true);
       const login = await api.get("/user/v1", { params: account });
       console.log(login.data.token);
       if (login.data.message == "login success") {
@@ -35,6 +38,7 @@ export default function LoginBox() {
           duration: 3000,
           isClosable: true,
         });
+        setIsLoading(false);
         nav("/");
       } else {
         toast({
@@ -46,6 +50,7 @@ export default function LoginBox() {
           duration: 3000,
           isClosable: true,
         });
+        setIsLoading(false);
       }
     } catch (err) {
       console.log(err);
@@ -122,7 +127,7 @@ export default function LoginBox() {
           Forget Password
         </Flex>
       </Box>
-      <Flex
+      <Button
         h={"32px"}
         w={"90%"}
         justifyContent={"center"}
@@ -131,10 +136,12 @@ export default function LoginBox() {
         color={"white"}
         alignItems={"center"}
         cursor={"pointer"}
+        isLoading={isLoading}
+        loadingText="Submitting"
         onClick={onSubmit}
       >
         Login
-      </Flex>
+      </Button>
       <Flex
         h={"32px"}
         w={"90%"}
