@@ -250,6 +250,7 @@ const userController = {
         {
           where: {
             token,
+            status: "FORGOT-PASSWORD",
           },
         }
       ).then(() =>
@@ -334,6 +335,7 @@ const userController = {
         {
           where: {
             token,
+            status: "VERIFY",
           },
         }
       );

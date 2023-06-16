@@ -26,9 +26,11 @@ import { useNavigate } from "react-router-dom";
 import PostS from "../components/contentS";
 import NavBar from "./NavBar";
 import TopBar from "./TopBar";
+import { useSelector } from "react-redux";
 
 export default function ProfilePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const userSelector = useSelector((state) => state.auth);
   const nav = useNavigate();
   return (
     <>
@@ -37,12 +39,16 @@ export default function ProfilePage() {
         <Flex flexDir={"column"} width={"100%"} height={"100%"}>
           <Flex padding={"16px"}>
             <Box display={"flex"} justifyContent={"center"} width={"30%"}>
-              <Avatar width={"auto"} height={"77px"}></Avatar>
+              <Avatar
+                width={"auto"}
+                height={"77px"}
+                src={userSelector.avatar_url}
+              ></Avatar>
             </Box>
             <Flex flexDir={"column"} gap={"12px"} width={"70%"}>
               <Flex alignItems={"center"} gap={"12px"}>
                 <Text fontSize={"18px"} fontWeight={"semibold"}>
-                  Username
+                  {userSelector.username}
                 </Text>
                 <Flex
                   justifyContent={"center"}
@@ -108,8 +114,8 @@ export default function ProfilePage() {
           </Flex>
           <Center width={"100%"} padding={"0 16px 16px 16px"}>
             <Flex flexDir={"column"} width={"100%"}>
-              <Text fontWeight={"bold"}>Name</Text>
-              <Text>Bio</Text>
+              <Text fontWeight={"bold"}>{userSelector.fullname}</Text>
+              <Text>{userSelector.bio}</Text>
             </Flex>
           </Center>
           <Flex flexWrap={"wrap"} gap={"4px"}>
