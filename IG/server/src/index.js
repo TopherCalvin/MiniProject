@@ -12,6 +12,7 @@ const db = require("./models");
 // db.sequelize.sync({ alter: true });
 // db.sequelize.sync({ force: true });
 app.use("/user", router.userRouter);
+app.use("/post", router.postRouter);
 app.use("/avatar", express.static(`${__dirname}/public/avatar`));
 
 app.listen(PORT, () => {
