@@ -95,14 +95,20 @@ const userController = {
   },
   editUser: async (req, res) => {
     try {
+      const filename = req.file?.filename;
       const { fullname, username, bio } = req.body;
-      const { filename } = req.file;
       const upClause = {};
+      let checker;
       if (fullname) {
         upClause.fullname = fullname;
       }
       if (username) {
         upClause.username = username;
+        checker = await db.User.findOne({
+          where: {
+            username,
+          },
+        });
       }
       if (bio) {
         upClause.bio = bio;
@@ -111,20 +117,24 @@ const userController = {
         upClause.avatar_url = url_image + filename;
       }
       if (!Object.keys(upClause).length) {
-        res.send({ message: "No fields to update" });
+        return res.send({ message: "No fields to update" });
+      }
+
+      if (checker?.dataValues.username == username) {
+        return res.send({ message: "username already used" });
       }
       await db.User.update(upClause, {
         where: {
           id: req.params.id,
         },
       });
-      await db.User.findOne({
+      return await db.User.findOne({
         where: {
           id: req.params.id,
         },
       }).then((result) => {
         delete result.dataValues.password;
-        res.send(result);
+        res.send(result.dataValues);
       });
     } catch (err) {
       console.log(err);

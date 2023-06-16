@@ -40,7 +40,11 @@ export default function ProfilePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const [verif, setVerif] = useState(true);
-  const [profile, setProfile] = useState();
+  const [profile, setProfile] = useState({
+    username: "",
+    fullname: "",
+    bio: "",
+  });
   const nav = useNavigate();
   const toast = useToast();
   const inputFileRef = useRef(null);
@@ -105,17 +109,40 @@ export default function ProfilePage() {
   async function onSubmit() {
     const formData = new FormData();
     formData.append("avatar", selectedFile);
+    formData.append("fullname", profile.fullname);
+    formData.append("username", profile.username);
+    formData.append("bio", profile.bio);
 
-    await api
-      .patch("/user/" + userSelector.id, { ...formData, ...profile })
-      .then((res) => {
-        console.log(res.data);
-        dispatch({
-          type: "login",
-          payload: res.data,
-        });
-        onClose();
+    await api.patch("/user/" + userSelector.id, formData).then((res) => {
+      toast({
+        position: "top",
+        colorScheme:
+          res.data.message == "username already used" ||
+          res.data.message == "No fields to update"
+            ? "red"
+            : "cyan",
+        title: "Edit Profile",
+        description:
+          res.data.message == "username already used" ||
+          res.data.message == "No fields to update"
+            ? res.data.message
+            : "Edit Success",
+        status:
+          res.data.message == "username already used" ||
+          res.data.message == "No fields to update"
+            ? "error"
+            : "success",
+        duration: 3000,
+        isClosable: true,
       });
+      dispatch({
+        type: "login",
+        payload: res.data,
+      });
+      setSelectedFile("");
+      onClose();
+      nav("/");
+    });
   }
   return (
     <>
