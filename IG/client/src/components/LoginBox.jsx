@@ -123,6 +123,7 @@ export default function LoginBox() {
           w={"90%"}
           color={"silver"}
           cursor={"pointer"}
+          onClick={() => nav("/forgot")}
         >
           Forget Password
         </Flex>

@@ -22,6 +22,7 @@ export default function Login() {
           Authorization: `Bearer ${pathname.split("/")[2]}`,
         },
       });
+      localStorage.removeItem("auth");
       setIsLoading(false);
     } catch (err) {
       setExpired(true);

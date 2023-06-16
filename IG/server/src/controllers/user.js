@@ -176,13 +176,13 @@ const userController = {
   },
   forgetPass: async (req, res) => {
     try {
-      const { emna } = req.query;
+      const { email } = req.query;
       const user = await db.User.findOne({
         where: {
-          email: emna,
+          email: email,
         },
       });
-      if (user.dataValues) {
+      if (user?.dataValues.id) {
         await db.Token.update(
           {
             valid: false,
@@ -214,6 +214,10 @@ const userController = {
         return res.send({
           message: "silahkan check email anda",
         });
+      } else {
+        return res.send({
+          message: "Email isn't registered",
+        });
       }
     } catch (err) {
       console.log(err);
@@ -224,7 +228,8 @@ const userController = {
   },
   changePass: async (req, res) => {
     try {
-      const { token } = req.query;
+      let token = req.headers.authorization;
+      token = token.split(" ")[1];
       const { password } = req.body;
       const { id } = req.user;
       const hashPassword = await bcrypt.hash(password, 10);
@@ -247,14 +252,11 @@ const userController = {
             token,
           },
         }
+      ).then(() =>
+        res.send({
+          message: "Password has been Reset",
+        })
       );
-      await db.User.findOne({
-        where: {
-          id,
-        },
-      }).then((result) => {
-        res.send(result);
-      });
     } catch (err) {
       console.log(err);
       return res.status(500).send({

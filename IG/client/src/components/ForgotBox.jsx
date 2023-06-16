@@ -6,13 +6,60 @@ import {
   Input,
   Icon,
   Center,
+  useToast,
 } from "@chakra-ui/react";
 import images from "../assets/images.png";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { BsShieldLock } from "react-icons/bs";
+import { api } from "../api/api";
 export default function ForgotBox() {
+  const toast = useToast();
   const nav = useNavigate();
+  const [email, setEmail] = useState("");
+  function inputHandler(val) {
+    try {
+      setEmail(val);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function onSubmit() {
+    try {
+      await api
+        .get("/user/forgetPass", {
+          params: {
+            email,
+          },
+        })
+        .then((result) => {
+          if (result.data.message == "Email isn't registered") {
+            toast({
+              position: "top",
+              colorScheme: "red",
+              title: "Reset Password",
+              description: result.data.message,
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
+          } else {
+            toast({
+              position: "top",
+              colorScheme: "cyan",
+              title: "Reset Password",
+              description: result.data.message,
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <Flex
       w={"100vw"}
@@ -48,13 +95,15 @@ export default function ForgotBox() {
           focusBorderColor="none"
           color={"silver"}
           border={"1px solid #80a9bb"}
-          id="emna"
+          id="email"
+          onChange={(e) => inputHandler(e.target.value)}
         ></Input>
         <Flex
           justifyContent={"end"}
           w={"90%"}
           color={"silver"}
           cursor={"pointer"}
+          onClick={() => nav("/login")}
         >
           Back to Login
         </Flex>
@@ -68,6 +117,7 @@ export default function ForgotBox() {
         color={"white"}
         alignItems={"center"}
         cursor={"pointer"}
+        onClick={onSubmit}
       >
         Send Login Link
       </Flex>
