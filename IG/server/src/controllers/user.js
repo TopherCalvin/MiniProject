@@ -47,6 +47,7 @@ const userController = {
   getUser: async (req, res) => {
     try {
       const { emna, password } = req.query;
+      console.log(req.query);
       const user = await db.User.findOne({
         where: {
           [Op.or]: [
@@ -72,15 +73,17 @@ const userController = {
             valid: true,
           });
           return res.send({
-            message: "login berhasil",
+            message: "login success",
             token: token.dataValues.token,
           });
         } else {
-          throw new Error("login gagal");
+          return res.send({
+            message: "wrong password",
+          });
         }
       } else {
         return res.send({
-          message: "login gagal",
+          message: "wrong username/email",
         });
       }
     } catch (err) {

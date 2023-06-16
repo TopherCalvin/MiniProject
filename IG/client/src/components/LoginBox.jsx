@@ -6,23 +6,61 @@ import {
   Input,
   InputRightElement,
   Icon,
+  useToast,
 } from "@chakra-ui/react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import images from "../assets/images.png";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { api } from "../api/api";
 export default function LoginBox() {
+  const toast = useToast();
   const nav = useNavigate();
   const [account, setAccount] = useState({
     emna: "",
     password: "",
   });
+  async function onSubmit() {
+    try {
+      const login = await api.get("/user/v1", { params: account });
+      console.log(login.data.token);
+      if (login.data.message == "login success") {
+        localStorage.setItem("auth", JSON.stringify(login.data.token));
+        toast({
+          position: "top",
+          colorScheme: "cyan",
+          title: "Logging In",
+          description: login.data.message,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        nav("/");
+      } else {
+        toast({
+          position: "top",
+          colorScheme: "red",
+          title: "Logging In",
+          description: login.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
   const [seePassword, setSeePassword] = useState(false);
   function inputHandler(event) {
-    const { value, id } = event.target;
-    const tempObj = {};
-    tempObj[id] = value;
-    setAccount(...account, ...tempObj);
+    try {
+      const { value, id } = event.target;
+      const tempObj = {};
+      tempObj[id] = value;
+      setAccount({ ...account, ...tempObj });
+    } catch (err) {
+      console.log(err);
+    }
   }
   return (
     <Flex
@@ -54,6 +92,7 @@ export default function LoginBox() {
             color={"silver"}
             border={"1px solid #80a9bb"}
             id="emna"
+            onChange={inputHandler}
           ></Input>
           <InputGroup w={"90%"}>
             <Input
@@ -92,6 +131,7 @@ export default function LoginBox() {
         color={"white"}
         alignItems={"center"}
         cursor={"pointer"}
+        onClick={onSubmit}
       >
         Login
       </Flex>

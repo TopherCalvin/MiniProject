@@ -15,7 +15,6 @@ import {
 import images from "../assets/images.png";
 import { TbAlertCircleFilled } from "react-icons/tb";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import images from "../assets/images.png";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { BsShieldLock } from "react-icons/bs";

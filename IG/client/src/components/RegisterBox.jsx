@@ -11,6 +11,7 @@ import {
   InputRightElement,
   useToast,
 } from "@chakra-ui/react";
+import { api } from "../api/api";
 import images from "../assets/images.png";
 import { TbAlertCircleFilled } from "react-icons/tb";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -24,15 +25,13 @@ export default function RegisterBox() {
   const formik = useFormik({
     initialValues: {
       email: "",
-      fullname: "",
       username: "",
       password: "",
     },
     validationSchema: Yup.object().shape({
       email: Yup.string()
         .required("You need to enter your email.")
-        .email("Email is invalid. format: example@email.com"),
-      fullname: Yup.string().required("Enter full name for your profile."),
+        .email("Email is invalid!(example@email.com)"),
       username: Yup.string().required("Enter a username for your profile."),
       password: Yup.string()
         .required("You need to enter your password")
@@ -49,36 +48,32 @@ export default function RegisterBox() {
         .oneOf([Yup.ref("password")], "Password do not match"),
     }),
     onSubmit: async () => {
-      const { fullname, bio, email, username, password } = formik.values;
-      const checker = {
-        //kasih api
-        params: {
-          email,
-          username,
-        },
-      };
-      if (username == "calcal") {
-        toast({
-          position: "top",
-          colorScheme: "red",
-          title: "Register failed.",
-          description: "Email/Username already used.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          position: "top",
-          colorScheme: "cyan",
-          title: "Account created.",
-          description: "Account creation was successful.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        const regis = "register was successful"; //kasih api body=formik.values
-        nav("/login");
+      try {
+        const regist = await api.post("/user", formik.values);
+        if (regist.data.message == "your register was successful") {
+          toast({
+            position: "top",
+            colorScheme: "cyan",
+            title: "Account Creation",
+            description: regist.data.message,
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+          nav("/login");
+        } else {
+          toast({
+            position: "top",
+            colorScheme: "red",
+            title: "Account Creation",
+            description: regist.data.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      } catch (err) {
+        console.log(err);
       }
     },
   });
@@ -109,27 +104,6 @@ export default function RegisterBox() {
           alignItems={"center"}
           rowGap={"10px"}
         >
-          <Box w={"90%"}>
-            <Input
-              onChange={inputHandler}
-              id="fullname"
-              h={"38px"}
-              w={"100%"}
-              focusBorderColor="none"
-              placeholder="Fullname"
-              color={"silver"}
-              border={"1px solid #80a9bb"}
-            ></Input>
-            <Box w={"100%"} color={"red"} h={"30px"}>
-              {formik.errors.fullname ? (
-                <>
-                  <Icon as={TbAlertCircleFilled} /> {formik.errors.fullname}
-                </>
-              ) : (
-                ""
-              )}
-            </Box>
-          </Box>
           <Box w={"90%"}>
             <Input
               onChange={inputHandler}
