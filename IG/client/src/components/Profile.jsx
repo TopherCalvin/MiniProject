@@ -181,6 +181,9 @@ export default function ProfilePage() {
                         color={"red"}
                         onClick={() => {
                           localStorage.removeItem("auth");
+                          dispatch({
+                            type: "logout",
+                          });
                           nav("/login");
                         }}
                       >
