@@ -12,7 +12,9 @@ export default function Login() {
     onOpen();
   }, []);
   useEffect(() => {
-    setIsLoading(false);
+    if (expired == true) {
+      setIsLoading(false);
+    }
   }, [expired]);
   async function onOpen() {
     try {
@@ -22,7 +24,6 @@ export default function Login() {
           Authorization: `Bearer ${pathname.split("/")[2]}`,
         },
       });
-      localStorage.removeItem("auth");
       setIsLoading(false);
     } catch (err) {
       setExpired(true);

@@ -14,8 +14,9 @@ import images from "../assets/images.png";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 export default function LoginBox() {
+  const dispatch = useDispatch();
   const toast = useToast();
   const nav = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -24,11 +25,6 @@ export default function LoginBox() {
     password: "",
   });
   const userSelector = useSelector((state) => state.auth);
-  useEffect(() => {
-    if (userSelector.id) {
-      nav("/");
-    }
-  }, [userSelector]);
   async function onSubmit() {
     try {
       setIsLoading(true);
@@ -36,6 +32,15 @@ export default function LoginBox() {
       console.log(login.data.token);
       if (login.data.message == "login success") {
         localStorage.setItem("auth", JSON.stringify(login.data.token));
+        const user = await api.get("/user/token", {
+          headers: {
+            Authorization: `Bearer ${login.data.token}`,
+          },
+        });
+        dispatch({
+          type: "login",
+          payload: user.data,
+        });
         toast({
           position: "top",
           colorScheme: "cyan",

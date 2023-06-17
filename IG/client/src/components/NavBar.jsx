@@ -16,6 +16,7 @@ export default function NavBar() {
       w={"100%"}
       maxW={"767px"}
       padding={"5px"}
+      bgColor={"white"}
     >
       <Icon as={FaHome} fontSize={"4xl"} h={"100%"} onClick={() => nav("/")} />
       <Icon as={MdOutlineAddBox} fontSize={"4xl"} h={"100%"} />

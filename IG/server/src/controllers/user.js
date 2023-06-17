@@ -74,6 +74,7 @@ const userController = {
           });
           return res.send({
             message: "login success",
+            value: user,
             token: token.dataValues.token,
           });
         } else {
@@ -354,7 +355,7 @@ const userController = {
         {
           where: {
             token,
-            status: "VERIFY ",
+            status: "VERIFY",
           },
         }
       );

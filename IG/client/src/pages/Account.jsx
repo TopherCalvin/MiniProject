@@ -9,7 +9,6 @@ export default function Account() {
         paddingTop={"48px"}
         w={"100%"}
         h={"100%"}
-        maxH={"667px"}
         justifyContent={"center"}
         flexDir={"column"}
         alignItems={"center"}
