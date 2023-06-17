@@ -11,7 +11,11 @@ router.post(
 );
 router.get("/getAll", postController.getPost);
 router.get("/:id", postController.getPost1);
-router.patch("/:id", postController.editPost);
+router.patch(
+  "/:id",
+  fileUploader({ destinationFolder: "post" }).single("post"),
+  postController.editPost
+);
 router.delete("/:id", postController.deletePost);
 
 //like

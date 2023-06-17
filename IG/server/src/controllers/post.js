@@ -7,7 +7,7 @@ const postController = {
   insertPost: async (req, res) => {
     try {
       const { caption, user_id } = req.body;
-      const { filename } = req.file;
+      const filename = req?.file.filename;
 
       await db.Post.create({
         image: url_postIMG + filename,
